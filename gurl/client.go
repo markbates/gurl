@@ -1,15 +1,13 @@
 package gurl
 
 import (
-	"io"
 	"io/ioutil"
 	"net/http"
 )
 
 type Client struct {
+	IO
 	HTTP *http.Client
-	In   io.Reader
-	Out  io.Writer
 }
 
 func (c Client) Do(u string, ct string) ([]byte, error) {
@@ -26,4 +24,19 @@ func (c Client) Do(u string, ct string) ([]byte, error) {
 	defer res.Body.Close()
 
 	return ioutil.ReadAll(res.Body)
+}
+
+func NewClient(io IO, rt RoundTripper) Client {
+	return Client{
+		IO: io,
+		HTTP: &http.Client{
+			Transport: rt,
+		},
+	}
+}
+
+type RoundTripper func(req *http.Request) (*http.Response, error)
+
+func (r RoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	return r(req)
 }
