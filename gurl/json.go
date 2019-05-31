@@ -26,7 +26,7 @@ func NewJSON(w io.Writer) *JSON {
 	return &j
 }
 
-func (c *JSON) Run(args []string) error {
+func (c *JSON) Run(client Client, args []string) error {
 	if err := c.Flags.Parse(args); err != nil {
 		return err
 	}
@@ -35,7 +35,7 @@ func (c *JSON) Run(args []string) error {
 		return fmt.Errorf("must pass in at least one URL")
 	}
 	for _, a := range args {
-		b, err := do(a, "application/json")
+		b, err := client.Do(a, "application/json")
 		if err != nil {
 			return err
 		}

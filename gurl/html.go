@@ -26,7 +26,7 @@ func NewHTML(w io.Writer) *HTML {
 	return &h
 }
 
-func (c *HTML) Run(args []string) error {
+func (c *HTML) Run(client Client, args []string) error {
 	if err := c.Flags.Parse(args); err != nil {
 		return err
 	}
@@ -35,7 +35,7 @@ func (c *HTML) Run(args []string) error {
 		return fmt.Errorf("must pass in at least one URL")
 	}
 	for _, a := range args {
-		b, err := do(a, "text/html")
+		b, err := client.Do(a, "text/html")
 		if err != nil {
 			return err
 		}

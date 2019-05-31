@@ -23,7 +23,7 @@ func NewFile(w io.Writer) *File {
 	return &j
 }
 
-func (c *File) Run(args []string) error {
+func (c *File) Run(client Client, args []string) error {
 	if err := c.Flags.Parse(args); err != nil {
 		return err
 	}

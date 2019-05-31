@@ -6,10 +6,15 @@ import (
 )
 
 type runner interface {
-	Run([]string) error
+	Run(Client, []string) error
 }
 
-func Route(w io.Writer, args []string) error {
+type Router struct {
+	Writer io.Writer
+	Client Client
+}
+
+func (rt Router) Route(args []string) error {
 	if len(args) == 0 {
 		return fmt.Errorf(generalUsage)
 	}
@@ -18,21 +23,21 @@ func Route(w io.Writer, args []string) error {
 	a := args[0]
 	switch a {
 	case "json", "j":
-		r = NewJSON(w)
+		r = NewJSON(rt.Writer)
 	case "html", "h":
-		r = NewHTML(w)
+		r = NewHTML(rt.Writer)
 	case "file", "f":
-		r = NewFile(w)
+		r = NewFile(rt.Writer)
 	case "ask", "a":
-		r = NewHTML(w)
+		r = NewAsk(rt.Writer)
 	case "-h":
-		fmt.Fprintln(w, generalUsage)
+		fmt.Fprintln(rt.Writer, generalUsage)
 		return nil
 	default:
 		return fmt.Errorf(generalUsage)
 	}
 
-	return r.Run(args[1:])
+	return r.Run(rt.Client, args[1:])
 }
 
 const generalUsage = `

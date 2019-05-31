@@ -3,25 +3,7 @@ package gurl
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 )
-
-func do(u string, ct string) ([]byte, error) {
-	req, err := http.NewRequest("GET", u, nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Content-Type", ct)
-
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-
-	return ioutil.ReadAll(res.Body)
-}
 
 func usage(f *flag.FlagSet) {
 	f.Usage = func() {

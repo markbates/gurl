@@ -3,14 +3,18 @@ package gurl
 import (
 	"flag"
 	"fmt"
+	"io"
 )
 
 type Ask struct {
+	io.Writer
 	Flags *flag.FlagSet
 }
 
-func NewAsk() *Ask {
-	h := Ask{}
+func NewAsk(w io.Writer) *Ask {
+	h := Ask{
+		Writer: w,
+	}
 
 	f := flag.NewFlagSet("ask", flag.ExitOnError)
 	usage(f)
@@ -18,7 +22,7 @@ func NewAsk() *Ask {
 	return &h
 }
 
-func (c *Ask) Run(args []string) error {
+func (c *Ask) Run(client Client, args []string) error {
 	if err := c.Flags.Parse(args); err != nil {
 		return err
 	}
@@ -34,10 +38,10 @@ func (c *Ask) Run(args []string) error {
 		return fmt.Errorf("must pass in at least one URL")
 	}
 
-	b, err := do(u, "text/html")
+	b, err := client.Do(u, "text/html")
 	if err != nil {
 		return err
 	}
-	fmt.Println(string(b))
+	fmt.Fprintln(c, string(b))
 	return nil
 }
