@@ -4,19 +4,19 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 )
 
 type JSON struct {
+	io.Writer
 	Flags  *flag.FlagSet
 	Pretty bool
 }
 
-func (j JSON) Usage() {
-	j.Flags.Usage()
-}
-
-func NewJSON() *JSON {
-	j := JSON{}
+func NewJSON(w io.Writer) *JSON {
+	j := JSON{
+		Writer: w,
+	}
 
 	f := flag.NewFlagSet("json", flag.ExitOnError)
 	f.BoolVar(&j.Pretty, "pretty", false, "pretty print JSON")
@@ -49,7 +49,7 @@ func (c *JSON) Run(args []string) error {
 				return err
 			}
 		}
-		fmt.Println(string(b))
+		fmt.Fprintln(c, string(b))
 	}
 	return nil
 }

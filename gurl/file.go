@@ -3,19 +3,19 @@ package gurl
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
+	"os"
 )
 
 type File struct {
+	io.Writer
 	Flags *flag.FlagSet
 }
 
-func (f File) Usage() {
-	f.Flags.Usage()
-}
-
-func NewFile() *File {
-	j := File{}
+func NewFile(w io.Writer) *File {
+	j := File{
+		Writer: w,
+	}
 
 	f := flag.NewFlagSet("file", flag.ExitOnError)
 	usage(f)
@@ -32,11 +32,19 @@ func (c *File) Run(args []string) error {
 		return fmt.Errorf("must pass in at least one path")
 	}
 	for _, a := range args {
-		b, err := ioutil.ReadFile(a)
-		if err != nil {
+		if err := c.readFile(a); err != nil {
 			return err
 		}
-		fmt.Println(string(b))
 	}
 	return nil
+}
+
+func (c *File) readFile(a string) error {
+	ff, err := os.Open(a)
+	if err != nil {
+		return err
+	}
+	defer ff.Close()
+	_, err = io.Copy(c, ff)
+	return err
 }
