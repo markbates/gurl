@@ -8,14 +8,11 @@ import (
 )
 
 type File struct {
-	io.Writer
 	Flags *flag.FlagSet
 }
 
-func NewFile(w io.Writer) *File {
-	j := File{
-		Writer: w,
-	}
+func NewFile() *File {
+	j := File{}
 
 	f := flag.NewFlagSet("file", flag.ExitOnError)
 	usage(f)
@@ -32,19 +29,19 @@ func (c *File) Run(client Client, args []string) error {
 		return fmt.Errorf("must pass in at least one path")
 	}
 	for _, a := range args {
-		if err := c.readFile(a); err != nil {
+		if err := c.readFile(client, a); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (c *File) readFile(a string) error {
+func (c *File) readFile(client Client, a string) error {
 	ff, err := os.Open(a)
 	if err != nil {
 		return err
 	}
 	defer ff.Close()
-	_, err = io.Copy(c, ff)
+	_, err = io.Copy(client.Out, ff)
 	return err
 }

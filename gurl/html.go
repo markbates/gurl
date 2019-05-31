@@ -3,20 +3,16 @@ package gurl
 import (
 	"flag"
 	"fmt"
-	"io"
 	"io/ioutil"
 )
 
 type HTML struct {
-	io.Writer
 	Flags   *flag.FlagSet
 	Outpath string
 }
 
-func NewHTML(w io.Writer) *HTML {
-	h := HTML{
-		Writer: w,
-	}
+func NewHTML() *HTML {
+	h := HTML{}
 
 	f := flag.NewFlagSet("html", flag.ExitOnError)
 	f.StringVar(&h.Outpath, "out", "", "write the results to a file")

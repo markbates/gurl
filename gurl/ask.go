@@ -3,18 +3,14 @@ package gurl
 import (
 	"flag"
 	"fmt"
-	"io"
 )
 
 type Ask struct {
-	io.Writer
 	Flags *flag.FlagSet
 }
 
-func NewAsk(w io.Writer) *Ask {
-	h := Ask{
-		Writer: w,
-	}
+func NewAsk() *Ask {
+	h := Ask{}
 
 	f := flag.NewFlagSet("ask", flag.ExitOnError)
 	usage(f)
@@ -30,7 +26,7 @@ func (c *Ask) Run(client Client, args []string) error {
 
 	fmt.Println("Which website would you like to GURL?")
 	var u string
-	if _, err := fmt.Scanln(&u); err != nil {
+	if _, err := fmt.Fscanln(client.In, &u); err != nil {
 		return err
 	}
 
@@ -42,6 +38,6 @@ func (c *Ask) Run(client Client, args []string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Fprintln(c, string(b))
+	fmt.Fprintln(client.Out, string(b))
 	return nil
 }

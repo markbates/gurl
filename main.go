@@ -17,12 +17,13 @@ type usage interface {
 }
 
 func main() {
-	rt := gurl.Router{
-		Writer: os.Stdout,
-		Client: gurl.Client{Client: http.DefaultClient},
+	client := gurl.Client{
+		HTTP: http.DefaultClient,
+		In:   os.Stdin,
+		Out:  os.Stdout,
 	}
 
-	if err := rt.Route(os.Args[1:]); err != nil {
+	if err := gurl.Route(client, os.Args[1:]); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}

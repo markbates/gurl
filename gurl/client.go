@@ -1,12 +1,15 @@
 package gurl
 
 import (
+	"io"
 	"io/ioutil"
 	"net/http"
 )
 
 type Client struct {
-	*http.Client
+	HTTP *http.Client
+	In   io.Reader
+	Out  io.Writer
 }
 
 func (c Client) Do(u string, ct string) ([]byte, error) {
@@ -16,7 +19,7 @@ func (c Client) Do(u string, ct string) ([]byte, error) {
 	}
 	req.Header.Set("Content-Type", ct)
 
-	res, err := c.Client.Do(req)
+	res, err := c.HTTP.Do(req)
 	if err != nil {
 		return nil, err
 	}
